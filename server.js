@@ -99,7 +99,8 @@ plantRoutes.route('/update/:id').post(function(req, res) {
             plants.plant_rainfall = req.body.plant_rainfall;
             plants.plant_hi = req.body.plant_hi;
             plants.plant_low = req.body.plant_low;
-            plants.plant_image = req.plant_image;
+            plants.plant_image = req.body.plant_image;
+            plants.plant_desc = req.body.plant_desc;
 
             plants.save().then(plants => {
                 res.json('Plant updated');

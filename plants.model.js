@@ -19,6 +19,9 @@ let Plant = new Schema({
     },
     plant_image: {
         type: String
+    },
+    plant_desc: {
+        type: String
     }
 });
 
