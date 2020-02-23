@@ -5,6 +5,9 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const plantRoutes = express.Router();
 const PORT = 4000;
+var ReadWriteLock = require('rwlock');
+ 
+var lock = new ReadWriteLock();
 
 let Plant = require('./plants.model');
 
@@ -47,6 +50,22 @@ plantRoutes.route('/temp/:temp').get(function(req,res){
     temp = req.params.temp;
     Plant.find({plant_low:{$lte: temp}, plant_hi:{$gte: temp}}, function(err, plants){
         res.json(plants);
+    }); 
+
+});
+
+plantRoutes.route('/rainfall/:rainfall').get(function(req, res){
+
+    rainfall = req.params.rainfall;
+    Plant.find({plant_rainfall:rainfall}, function(err,plants){
+        res.json(plants);
+    });
+});
+
+plantRoutes.route('/name/:name').get(function(req, res){
+    name = req.params.name;
+    Plant.find({plant_name:name}, function(err, plants){
+        res.json(plants);
     });
 
 });
@@ -62,6 +81,14 @@ plantRoutes.route('/add').post(function(req, res) {
         });
 });
 
+plantRoutes.route('/delete/:id').post(async function(req, res) {
+    lock.writeLock(async function(release){
+        await Plant.findOneAndDelete({_id:req.params.id});
+        res.status(200).send();
+        release();
+    });
+});
+
 plantRoutes.route('/update/:id').post(function(req, res) {
     Plant.findById(req.params.id, function(err, plants) {
         if (!plants)
@@ -72,6 +99,7 @@ plantRoutes.route('/update/:id').post(function(req, res) {
             plants.plant_rainfall = req.body.plant_rainfall;
             plants.plant_hi = req.body.plant_hi;
             plants.plant_low = req.body.plant_low;
+            plants.plant_image = req.plant_image;
 
             plants.save().then(plants => {
                 res.json('Plant updated');
