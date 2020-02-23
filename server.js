@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const plantRoutes = express.Router();
-const PORT = 4000;
+const PORT = process.env.PORT;
 var ReadWriteLock = require('rwlock');
  
 var lock = new ReadWriteLock();
@@ -14,7 +14,7 @@ let Plant = require('./plants.model');
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/plants', { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 const connection = mongoose.connection;
 
 
